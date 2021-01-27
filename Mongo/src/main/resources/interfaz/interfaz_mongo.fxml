@@ -48,7 +48,7 @@
             <Button fx:id="btEliminarPartido" layoutX="290.0" layoutY="270.0" mnemonicParsing="false" onAction="#eliminarPartido" text="Eliminar" />
             <ScrollPane layoutX="375.0" layoutY="236.0" prefHeight="139.0" prefWidth="200.0">
                <content>
-                  <ListView fx:id="lvPartidos" onMouseClicked="#getJugadorSeleccionado" prefHeight="368.0" prefWidth="426.0" />
+                  <ListView fx:id="lvPartidos" onMouseClicked="#getPartidoSeleccionado" prefHeight="368.0" prefWidth="426.0" />
                </content>
             </ScrollPane>
          </children>

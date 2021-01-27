@@ -1,8 +1,6 @@
 package DAO;
 
 import Beans.Equipo;
-import Beans.Jugador;
-import Utilidades.R;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoCollection;
@@ -11,10 +9,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
-import java.io.IOException;
-import java.sql.*;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import static com.mongodb.client.model.Filters.eq;
 

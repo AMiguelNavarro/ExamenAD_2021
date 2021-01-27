@@ -1,44 +1,40 @@
 package Controlador;
 
 import Beans.Equipo;
-import Beans.Jugador;
+import Beans.Partido;
 import DAO.EquiposDAO;
-import DAO.JugadoresDAO;
+import DAO.PartidosDAO;
 import Utilidades.Alertas;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class AppControlador implements Initializable {
 
-    public TextField tfNombreEquipo, tfPatrocinadorEquipo, tfCategoriaEquipo, tfNombreJugador, tfApellidoJugador, tfDorsalJugador;
-    public Button btInsertarEquipo, btEliminarEquipo, btInsertarJugador, btModificarJugador, btCancelar;
-    public ListView lvEquipos, lvJugadores;
-    public ComboBox<String> cbEquipo;
+    public TextField tfNombreEquipo, tfPatrocinadorEquipo, tfCategoriaEquipo, tfArbitro, tfCampo, tfIncidencias;
+    public Button btInsertarEquipo, btEliminarEquipo, btInsertarPartido, btEliminarPartido;
+    public ListView lvEquipos, lvPartidos;
 
-    private JugadoresDAO jugadoresDAO;
+    private PartidosDAO partidosDAO;
     private EquiposDAO equiposDAO;
 
     private Equipo equipoSeleccionado;
-    private Jugador jugadorSeleccionado;
+    private Partido partidoSeleccionado;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        jugadoresDAO = new JugadoresDAO();
+        partidosDAO = new PartidosDAO();
         equiposDAO = new EquiposDAO();
-        jugadoresDAO.conectar();
+        partidosDAO.conectar();
         equiposDAO.conectar();
         cargarDatos();
     }
@@ -51,15 +47,12 @@ public class AppControlador implements Initializable {
         equipos = equiposDAO.getEquipos();
         lvEquipos.setItems(FXCollections.observableList(equipos));
 
-        ArrayList<String> nombreEquipos = new ArrayList<>();
-
-        for (Equipo equipo : equipos) {
-            nombreEquipos.add(equipo.getNombre());
-        }
-
-        cbEquipo.setItems(FXCollections.observableList(nombreEquipos));
+        ArrayList<Partido> partidos = null;
+        partidos = partidosDAO.getPartidos();
+        lvPartidos.setItems(FXCollections.observableList(partidos));
 
         limpiarCajasEquipos();
+        limpiarCajasPartidos();
 
     }
 
@@ -105,27 +98,46 @@ public class AppControlador implements Initializable {
     } // OK
 
     @FXML
-    public void insertarJugador(Event event) {
+    public void insertarPartido(Event event) {
 
-        String nombre = tfNombreJugador.getText();
-        String apellidos = tfApellidoJugador.getText();
-        String dorsal = tfDorsalJugador.getText();
-        String equipo = cbEquipo.getSelectionModel().getSelectedItem();
+        String arbitro = tfArbitro.getText();
+        String campo = tfCampo.getText();
+        String incidencia = tfIncidencias.getText();
 
-        if (equipo == null || equipo.isBlank() || equipo.isEmpty()) {
-            Alertas.mostrarError("ERROR", "Debes asignarle un equipo");
+        if (arbitro == null || arbitro.isEmpty() || arbitro.isBlank() || campo == null || campo.isEmpty() || campo.isBlank()) {
+            Alertas.mostrarError("ERROR", "Debes rellenar el arbitro y el campo como mínimo");
             return;
         }
 
-        Jugador jugador = new Jugador();
+        Partido partido = new Partido();
+        partido.setArbitro(arbitro);
+        partido.setCampo(campo);
+        partido.setIncidencias(incidencia);
+
+        partidosDAO.insertarPartido(partido);
+
+        cargarDatos();
+        limpiarCajasPartidos();
+
 
     }
 
     @FXML
-    public void modificarJugador(Event event) {}
+    public void eliminarPartido(Event event) {
 
-    @FXML
-    public void cancelar(Event event) {}
+        Partido partido = partidoSeleccionado;
+
+        if (partido == null) {
+            Alertas.mostrarError("ERROR", "Debes seleccionar un partido para poder borrar");
+        }
+
+        partidosDAO.eliminarPartido(partido);
+
+        cargarDatos();
+        limpiarCajasPartidos();
+
+    }
+
 
     @FXML
     public void getEquipoSeleccionado(Event event) {
@@ -141,7 +153,17 @@ public class AppControlador implements Initializable {
     } // OK
 
     @FXML
-    public void getJugadorSeleccionado(Event event) {}
+    public void getPartidoSeleccionado(Event event) {
+
+        partidoSeleccionado = (Partido) lvPartidos.getSelectionModel().getSelectedItem();
+
+        if (partidoSeleccionado == null) {
+            Alertas.mostrarError("ERROR", "No has seleccionado ningún equipo");
+        }
+
+        cargarPartidoSeleccionado(partidoSeleccionado);
+
+    }
 
 
     public void limpiarCajasEquipos() {
@@ -150,10 +172,22 @@ public class AppControlador implements Initializable {
         tfPatrocinadorEquipo.setText("");
     }
 
+    public void limpiarCajasPartidos() {
+        tfArbitro.setText("");
+        tfCampo.setText("");
+        tfIncidencias.setText("");
+    }
+
     public void cargarEquipoSeleccionado(Equipo equipo) {
         tfNombreEquipo.setText(equipo.getNombre());
         tfPatrocinadorEquipo.setText(equipo.getPatrocinador());
         tfCategoriaEquipo.setText(equipo.getCategoría());
+    }
+
+    public void cargarPartidoSeleccionado(Partido partido) {
+        tfArbitro.setText(partido.getArbitro());
+        tfCampo.setText(partido.getCampo());
+        tfIncidencias.setText(partido.getIncidencias());
     }
 
 
