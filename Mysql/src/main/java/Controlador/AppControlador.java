@@ -124,18 +124,39 @@ public class AppControlador implements Initializable {
 
     @FXML
     public void insertarJugador(Event event) {
+        try {
+            String nombre = tfNombreJugador.getText();
+            String apellidos = tfApellidoJugador.getText();
+            String dorsal = tfDorsalJugador.getText();
+            String equipo = cbEquipo.getSelectionModel().getSelectedItem();
 
-        String nombre = tfNombreJugador.getText();
-        String apellidos = tfApellidoJugador.getText();
-        String dorsal = tfDorsalJugador.getText();
-        String equipo = cbEquipo.getSelectionModel().getSelectedItem();
+            if (equipo == null || equipo.isBlank() || equipo.isEmpty()) {
+                Alertas.mostrarError("ERROR", "Debes asignarle un equipo");
+                return;
+            }
 
-        if (equipo == null || equipo.isBlank() || equipo.isEmpty()) {
-            Alertas.mostrarError("ERROR", "Debes asignarle un equipo");
-            return;
+            Equipo equipo1 = new Equipo();
+
+            ArrayList<Equipo> listaEquipos = equiposDAO.getEquipos();
+            for (Equipo eq : listaEquipos) {
+                if (eq.getNombre() == equipo) {
+                    equipo1.setIdEquipo(eq.getIdEquipo());
+                }
+            }
+
+            Jugador jugador = new Jugador();
+            jugador.setNombre(nombre);
+            jugador.setApellidos(apellidos);
+            jugador.setDorsal(dorsal);
+            jugador.setIdEquipo(equipo1.getIdEquipo());
+
+            jugadoresDAO.insertarJugador(jugador);
+
+            cargarDatos();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
-
-        Jugador jugador = new Jugador();
 
     }
 
