@@ -1,0 +1,8 @@
+Controlador\AppControlador.class
+DAO\EquiposDAO.class
+Utilidades\Alertas.class
+App.class
+Beans\Equipo.class
+DAO\JugadoresDAO.class
+Utilidades\R.class
+Beans\Jugador.class
